@@ -36,7 +36,7 @@ jobs:
       compiler: gcc
       services:
         - docker
-      env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7.1" TARGET=linux_gcc docker_tag="gcc070clang040" NIGHTLY="conan"
+      env: CMAKE_CC="gcc-7" CMAKE_CXX="g++-7" CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7.2" TARGET=linux_gcc docker_tag="gcc070clang040" NIGHTLY="conan"
 
     - os: linux
       dist: trusty
@@ -136,7 +136,7 @@ deploy:
   api_key:
     - secure: DgFzibKfjjD4v6zP51sjyP+chyBNKA6D3LHz4+pKN2mSBLSFeqK29z+38TlIOJHSpq6pWdvxqHjn+vQuYV1v/oqri0AVpo0kxFojtNaIFo1Dc/Sfv76V7X6p9+JaSRtKtqCjOV7QP9fftyUgSu1Bq67fwuv6QvDgOzdQIcV87bA=
   file_glob: true
-  file: /tmp/inexor-build/Inexor-*.zip
+  file: /tmp/inexor-build/inexor-core-*.zip
   overwrite: true
   on:
     # Deploy only if build was caused by a tag push.

@@ -73,11 +73,11 @@ before_build:
   - cmd: if "%platform%"=="x64" ( set "CMAKE_GENERATOR_NAME=Visual Studio %VSVERSION% Win64" && set "arch_str=x86_64")
   - cmd: if %configuration%==Debug (set "runtime_str=MTd")else (set "runtime_str=MT")
 
-  - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_MASTER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
-
+  - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
 
   - cmd: conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
   - cmd: conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 3
+
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --scope build_all=1 --build -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --scope build_all=1 --scope create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry_wait 10 --confirm "*stable*" )
@@ -92,8 +92,7 @@ build:
 
 artifacts:
   # pushing a single file
-  - path: build\Inexor-*.zip
-#  - path: build\Inexor-*.exe
+  - path: build\inexor-core-*.zip
 
 deploy:
     # push our nightly bundle via ftp
