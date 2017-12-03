@@ -33,6 +33,15 @@ jobs:
       dist: trusty
       sudo: required
       language: cpp
+      compiler: clang
+      services:
+        - docker
+      env: CMAKE_CC="clang-5.0" CMAKE_CXX="clang++-5.0" CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET=linux_clang docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
+
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: cpp
       compiler: gcc
       services:
         - docker
