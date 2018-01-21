@@ -121,10 +121,10 @@ script:
       NIGHTLY_PASSWORD="${FTP_PASSWORD}";
     fi
   - if ! [[ "${docker_tag}" == "NODOCKER" ]]; then
-    sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${TRAVIS_COMMIT} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+    sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
     fi
   - if [ "${TARGET}" == "new_version_tagger" ]; then
-        bash ./tool/travis.sh /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${TRAVIS_COMMIT} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+        bash ./tool/travis.sh /${RELATIVE_PATH} ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${TRAVIS_BRANCH} ${TRAVIS_JOB_NUMBER} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_TAG} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
     fi
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
       bash ${RELATIVE_PATH}tool/travis_macos.sh;
