@@ -130,8 +130,8 @@ script:
       NIGHTLY_PASSWORD="${FTP_PASSWORD}";
     fi
   - if ! [[ "${docker_tag}" == "NODOCKER" ]]; then
-    SOURCE_DIRECTORY="$(pwd)/${RELATIVE_PATH}";
-    sudo docker run -v ${SOURCE_DIRECTORY}':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+    SOURCE_DIRECTORY="$(pwd)";
+    sudo docker run -v ${SOURCE_DIRECTORY}':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
     fi
   - if [ "${TARGET}" == "new_version_tagger" ]; then
         bash ./tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
