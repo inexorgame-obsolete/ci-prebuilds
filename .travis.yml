@@ -27,10 +27,6 @@ git:
 
 language: cpp
 
-env:
-  matrix:
-    - COMPILER_CONFIGURATION="Debug"
-    - COMPILER_CONFIGURATION="Release"
 
 jobs:
   include:
@@ -45,13 +41,25 @@ jobs:
       sudo: required
       services:
         - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET="compile" docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
+      env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
     - os: linux
       dist: trusty
       sudo: required
       services:
         - docker
-      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET="compile" docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
+      env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Debug" TARGET="compile" docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
 
     # Older compilers we compile Conan packages for, to speed things up for other people
     - os: linux
@@ -59,33 +67,61 @@ jobs:
       sudo: required
       services:
         - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET="compile" docker_tag="ubuntu-bionic-clang040" NIGHTLY="conan"
+      env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Release" TARGET="compile" docker_tag="ubuntu-bionic-clang040" NIGHTLY="conan"
     - os: linux
       dist: trusty
       sudo: required
       services:
         - docker
-      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="6" TARGET="compile" docker_tag="ubuntu-bionic-gcc06" NIGHTLY="conan"
+      env: COMPILER="clang" COMPILER_VERSION="4.0" COMPILER_CONFIGURATION="Debug" TARGET="compile" docker_tag="ubuntu-bionic-clang040" NIGHTLY="conan"
     - os: linux
       dist: trusty
       sudo: required
       services:
         - docker
-      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="5" TARGET="compile" docker_tag="ubuntu-bionic-gcc05" NIGHTLY="conan"
-
+      env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Release" TARGET="compile" docker_tag="ubuntu-bionic-gcc06" NIGHTLY="conan"
     - os: linux
       dist: trusty
       sudo: required
       services:
         - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET="compile" docker_tag="ubuntu-bionic-clang039" NIGHTLY="conan"
-
+      env: COMPILER="gcc" COMPILER_VERSION="6" COMPILER_CONFIGURATION="Debug" TARGET="compile" docker_tag="ubuntu-bionic-gcc06" NIGHTLY="conan"
     - os: linux
       dist: trusty
       sudo: required
       services:
         - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET="compile" docker_tag="ubuntu-bionic-clang038" NIGHTLY="conan"
+      env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Release" TARGET="compile" docker_tag="ubuntu-bionic-gcc05" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: COMPILER="gcc" COMPILER_VERSION="5" COMPILER_CONFIGURATION="Debug" TARGET="compile" docker_tag="ubuntu-bionic-gcc05" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Release" TARGET="compile" docker_tag="ubuntu-bionic-clang039" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Debug" TARGET="compile" docker_tag="ubuntu-bionic-clang039" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: COMPILER="clang" COMPILER_VERSION="3.8" COMPILER_CONFIGURATION="Release" TARGET="compile" docker_tag="ubuntu-bionic-clang038" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: COMPILER="clang" COMPILER_VERSION="3.8" COMPILER_CONFIGURATION="Debug" TARGET="compile" docker_tag="ubuntu-bionic-clang038" NIGHTLY="conan"
 
   fast_finish: true # don't wait for allow_failures to fail, gives faster response
   allow_failures:
@@ -125,10 +161,10 @@ script:
          exit 0;
         fi;
       fi;
-      sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
+      sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
     fi
   - if [ "${TARGET}" == "new_version_tagger" ]; then
-        bash ./tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
+        bash ./tool/travis.sh ${TARGET} ${COMPILER} ${COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
     fi
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
       if [[ "${TRAVIS_REPO_SLUG}" == "inexorgame/inexor-core" ]]; then
