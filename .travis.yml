@@ -25,6 +25,13 @@ notifications:
 git:
   depth: 15
 
+language: cpp
+
+env:
+  matrix:
+    - COMPILER_CONFIGURATION="Debug"
+    - COMPILER_CONFIGURATION="Release"
+
 jobs:
   include:
     # We run the following jobs in ci-prebuilds:
@@ -32,73 +39,53 @@ jobs:
     - os: osx
       sudo: false
       osx_image: xcode9.2
-      language: cpp
-      compiler: clang
       env: docker_tag="NODOCKER" compiler=clang TARGET="macos" NIGHTLY="conan"
-
     - os: linux
       dist: trusty
       sudo: required
-      language: cpp
-      compiler: clang
       services:
         - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET=linux_clang docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
-
+      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="5.0" TARGET="compile" docker_tag="ubuntu-bionic-clang050" NIGHTLY="conan"
     - os: linux
       dist: trusty
       sudo: required
-      language: cpp
-      compiler: gcc
       services:
         - docker
-      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
+      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="7" TARGET="compile" docker_tag="ubuntu-bionic-gcc07" NIGHTLY="conan"
 
     # Older compilers we compile Conan packages for, to speed things up for other people
     - os: linux
       dist: trusty
       sudo: required
-      language: cpp
-      compiler: clang
       services:
         - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET=linux_clang docker_tag="ubuntu-artful-clang040" NIGHTLY="conan"
+      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="4.0" TARGET="compile" docker_tag="ubuntu-bionic-clang040" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="6" TARGET="compile" docker_tag="ubuntu-bionic-gcc06" NIGHTLY="conan"
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+        - docker
+      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="5" TARGET="compile" docker_tag="ubuntu-bionic-gcc05" NIGHTLY="conan"
 
     - os: linux
       dist: trusty
       sudo: required
-      language: cpp
-      compiler: gcc
       services:
         - docker
-      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="6" TARGET=linux_gcc docker_tag="ubuntu-artful-gcc06" NIGHTLY="conan"
+      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET="compile" docker_tag="ubuntu-bionic-clang039" NIGHTLY="conan"
 
     - os: linux
       dist: trusty
       sudo: required
-      language: cpp
-      compiler: gcc
       services:
         - docker
-      env: CONAN_COMPILER="gcc" CONAN_COMPILER_VERSION="5" TARGET=linux_gcc docker_tag="ubuntu-bionic-gcc05" NIGHTLY="conan"
-
-    - os: linux
-      dist: trusty
-      sudo: required
-      language: cpp
-      compiler: clang
-      services:
-        - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.9" TARGET=linux_clang docker_tag="ubuntu-bionic-clang039" NIGHTLY="conan"
-
-    - os: linux
-      dist: trusty
-      sudo: required
-      language: cpp
-      compiler: clang
-      services:
-        - docker
-      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET=linux_clang docker_tag="ubuntu-bionic-clang038" NIGHTLY="conan"
+      env: CONAN_COMPILER="clang" CONAN_COMPILER_VERSION="3.8" TARGET="compile" docker_tag="ubuntu-bionic-clang038" NIGHTLY="conan"
 
   fast_finish: true # don't wait for allow_failures to fail, gives faster response
   allow_failures:
@@ -114,7 +101,6 @@ before_install:
 
 script:
   - if [ "${conan_prebuilds}" == "true" ]; then
-      set -e ;
       bash ./tool/travis_conditional_conan_package_generating.sh ;
     else
       echo "${conan_prebuilds}" ;
@@ -130,13 +116,30 @@ script:
       NIGHTLY_PASSWORD="${FTP_PASSWORD}";
     fi
   - if ! [[ "${docker_tag}" == "NODOCKER" ]]; then
-    SOURCE_DIRECTORY="$(pwd)";
-    sudo docker run -v ${SOURCE_DIRECTORY}':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+      if [[ "${TRAVIS_REPO_SLUG}" == "inexorgame/inexor-core" ]]; then
+        if [[ ! "${TRAVIS_PULL_REQUEST}" == false ]]; then
+          echo >&2 -e "Skipping build, because this is a pull " \
+            "request with a branch in the main repo.\n"         \
+            "This means, there should already be a CI job for " \
+            "this branch. No need to do things twice.";
+         exit 0;
+        fi;
+      fi;
+      sudo docker run -v $(pwd)':'/inexor --net=host -it inexorgame/ci-docker':'${docker_tag} /inexor/${RELATIVE_PATH}tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
     fi
   - if [ "${TARGET}" == "new_version_tagger" ]; then
-        bash ./tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN} ${TRAVIS_PULL_REQUEST} ${TRAVIS_REPO_SLUG};
+        bash ./tool/travis.sh ${TARGET} ${CONAN_COMPILER} ${CONAN_COMPILER_VERSION} ${COMPILER_CONFIGURATION} ${NIGHTLY} ${NIGHTLY_USER} ${NIGHTLY_PASSWORD} ${FTP_DOMAIN};
     fi
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+      if [[ "${TRAVIS_REPO_SLUG}" == "inexorgame/inexor-core" ]]; then
+        if [[ ! "${TRAVIS_PULL_REQUEST}" == false ]]; then
+          echo >&2 -e "Skipping build, because this is a pull " \
+            "request with a branch in the main repo.\n"         \
+            "This means, there should already be a CI job for " \
+            "this branch. No need to do things twice.";
+         exit 0;
+        fi;
+      fi;
       bash ${RELATIVE_PATH}tool/travis_macos.sh;
     fi
 
