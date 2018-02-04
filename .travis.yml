@@ -35,6 +35,7 @@ linux: &linux
     - docker
 
 osx: &osx
+  os: osx
   sudo: false
 
 jobs:
