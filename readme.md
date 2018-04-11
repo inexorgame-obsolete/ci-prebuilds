@@ -6,9 +6,9 @@ This repository uses our [Docker containers](https://github.com/inexorgame/ci-do
 
 **Why?**
   * all Inexor team members can trigger a (re-)build easily
-  * transparent, reproducable build process
+  * transparent, reproducible build process
   * easier to debug
   * reduces build time for the majority of developers
   * mass testing of your dependencies
 
-If the builds are successfull the binaries will get uploaded to our [Conan repository](https://bintray.com/inexorgame/inexor-conan).
+If the builds are successful the binaries will get uploaded to our [Conan repository](https://bintray.com/inexorgame/inexor-conan).
