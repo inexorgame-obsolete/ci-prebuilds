@@ -11,7 +11,7 @@
 # in order to not cause unnecessary rebuilds.
 #
 # The ci-prebuilds version will have un-comment every line starting with #CI(followed by an empty space)
-# e.g. echo this only gets executed in ci-prebuilds
+# e.g. #CI echo this only gets executed in ci-prebuilds
 #
 # The ci-prebuilds version will have every line removed containing #CIDELETE
 # e.g. #CIDELETE this line is not visible in ci-prebuilds aka. won't get executed
@@ -50,11 +50,11 @@ core: &core
         env: DOCKER="NODOCKER" conan_prebuilds="true"
       - stage: "Building & Testing"
         <<: *linux
-        env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="true" #CIDELETE
+        env: COMPILER="clang" COMPILER_VERSION="5.0" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-clang050" NIGHTLY="true"
       - <<: *linux
-        env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="true" #CIDELETE
+        env: COMPILER="gcc" COMPILER_VERSION="7" COMPILER_CONFIGURATION="Release" TARGET="compile" DOCKER="ubuntu-bionic-gcc07" NIGHTLY="true"
       - stage: "Create GitHub Tag"
-        if: branch = master AND tag is blank AND fork is faepo = head_repo AND type != pull_request  #CIDELETE
+        if: branch = master AND tag is blank AND fork is false AND repo = head_repo AND type != pull_request
         os: linux
         sudo: false
         dist: trusty
@@ -112,9 +112,10 @@ ciprebuilds: &ciprebuilds
       - <<: *linux
         env: COMPILER="clang" COMPILER_VERSION="3.9" COMPILER_CONFIGURATION="Debug" TARGET="compile" DOCKER="ubuntu-bionic-clang039" NIGHTLY="conan"
     fast_finish: true # don't wait for allow_failures to fail, gives faster response
-    allow_failures:
-      - os: osx
-      - os: linux
+    # allow_failures:
+      # - os: osx
+      #CI - os: linux
+
 
 
 # We run the following jobs in ci-prebuilds:
