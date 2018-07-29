@@ -33,6 +33,8 @@ environment:
     matrix:
       - VSVERSION: "15 2017"
       - VSVERSION: "14 2015"
+      - TOOLSET: "None"
+      - TOOLSET: "v141_clang_c2"
 
 platform:
   - x64
@@ -42,14 +44,10 @@ configuration:
   - Debug
   - Release
 
-toolset:
-  - None
-  - v141_clang_c2
-
 matrix:
   exclude:
     - VSVERSION: "14 2015"
-      toolset: v141_clang_c2
+      TOOLSET: v141_clang_c2
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -94,7 +92,7 @@ before_build:
   - cmd: conan remote list
 
   - cmd: if "%GLOBAL_NIGHTLY%"=="conanforcerebuild" ( set "buildstrategy=" && set "GLOBAL_NIGHTLY=conan") else ( set "buildstrategy==outdated" )
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --env build_all=1 --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%toolset% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --env build_all=1 --env create_package=1 --build=outdated -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%toolset% -s arch=%arch_str% -s build_type=%configuration% )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --env build_all=1 --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%TOOLSET% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --env build_all=1 --env create_package=1 --build=outdated -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%TOOLSET% -s arch=%arch_str% -s build_type=%configuration% )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry-wait 10 --confirm "*stable*" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
