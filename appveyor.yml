@@ -46,11 +46,6 @@ configuration:
   - Debug
   - Release
 
-matrix:
-  exclude:
-    - VSVERSION: "14 2015"
-      TOOLSET: v141_clang_c2
-
 # scripts that are called at very beginning, before repo cloning
 init:
   - cmd: python --version
