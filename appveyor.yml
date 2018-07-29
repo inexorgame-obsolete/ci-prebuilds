@@ -11,7 +11,7 @@
 # in order to not cause unnecessary rebuilds.
 #
 # The ci-prebuilds version will have un-comment every line starting with #CI(followed by an empty space)
-# e.g. echo this only gets executed in ci-prebuilds
+# e.g. #CI echo this only gets executed in ci-prebuilds
 #
 # The ci-prebuilds version will have every line removed containing #CEDELETE
 # e.g. #CIDELETE this line is not visible in ci-prebuilds aka. won't get executed
@@ -42,8 +42,18 @@ configuration:
   - Debug
   - Release
 
+toolset:
+  - None
+  - v141_clang_c2
+
+matrix:
+  exclude:
+    - VSVERSION: "14 2015"
+      toolset: v141_clang_c2
+
 # scripts that are called at very beginning, before repo cloning
 init:
+  - cmd: python --version
   - cmd: cmake --version
   - cmd: msbuild /version
 
@@ -52,7 +62,6 @@ install:
   - cmd: python -m pip install conan
   - cmd: set "MAIN_FOLDER=C:\projects\inexorgame\%RELATIVE_PATH%"
   - cmd: cd %MAIN_FOLDER%
-  - cmd: git submodule update --init --recursive
   - cmd: set VSVERSIONSHORT=%VSVERSION:~0,2%
    # set INEXOR_VERSION (used in cmakes package creation process) based on the last tag found.
   - cmd: if "%APPVEYOR_REPO_TAG%"=="true" ( set "INEXOR_VERSION=%APPVEYOR_REPO_TAG_NAME%" )
@@ -75,16 +84,17 @@ before_build:
 
   - cmd: set "args=-DBUILD_CLIENT=1 -DBUILD_SERVER=1 -DBUILD_TEST=1 -DCREATE_PACKAGE=1"
 
+  - cmd: conan --version
+
   - cmd: conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
-  ## https://bintray.com/conan/conan-center is second, https://bintray.com/conan/conan-transit/ third
+  ## https://bintray.com/conan/conan-center is second
   - cmd: conan remote add bincrafers https://api.bintray.com/conan/bincrafters/public-conan --insert 3
   - cmd: conan remote add community https://api.bintray.com/conan/conan-community/conan --insert 4
 
   - cmd: conan remote list
 
-  - cmd: conan info ..
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conanforcerebuild" ( set "buildstrategy=" && set "GLOBAL_NIGHTLY=conan") else ( set "buildstrategy==missing" )
-  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --env build_all=1 --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --env build_all=1 --env create_package=1 --build=missing -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s arch=%arch_str% -s build_type=%configuration% )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conanforcerebuild" ( set "buildstrategy=" && set "GLOBAL_NIGHTLY=conan") else ( set "buildstrategy==outdated" )
+  - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan install .. --env build_all=1 --build%buildstrategy% -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%toolset% -s arch=%arch_str% -s build_type=%configuration% ) else ( conan install .. --env build_all=1 --env create_package=1 --build=outdated -s compiler="Visual Studio" -s compiler.version=%VSVERSIONSHORT% -s compiler.runtime=%runtime_str% -s compiler.toolset=%toolset% -s arch=%arch_str% -s build_type=%configuration% )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan user --password "%CONAN_PASSWORD%" -r inexor "%CONAN_USER%" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="conan" ( conan upload --all -r inexor --retry 3 --retry-wait 10 --confirm "*stable*" )
   - cmd: if "%GLOBAL_NIGHTLY%"=="true" ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% -DCPACK_GENERATOR="ZIP" ) else ( cmake .. -G "%CMAKE_GENERATOR_NAME%" %args% )
@@ -101,14 +111,6 @@ artifacts:
   - path: build\inexor-core-*.zip
 
 deploy:
-    # push our nightly bundle via ftp
- # - provider: FTP
- #   protocol: ftp
- #   host: inexor.org
- #   username:
- #     secure: rpQyxcVaaqNxDvYQlGP/eA==
- #   password:
- #     secure: aBNw6S6n1MqCfw/0S2vhDA==
     # push release binaries to GitHub if tag gets created (and create a release draft)
   - provider: GitHub
     auth_token:
@@ -121,6 +123,7 @@ deploy:
       # do only deploy on tag push
       appveyor_repo_tag: true
       configuration: Release
+      VSVERSION: "15 2017"
 
 test_script:
   - C:\projects\inexorgame\%RELATIVE_PATH%build\bin\unit_tests.exe
