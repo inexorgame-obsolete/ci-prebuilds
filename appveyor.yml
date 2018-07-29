@@ -32,9 +32,11 @@ environment:
     # VS VERSION IN CMAKE STYLE
     matrix:
       - VSVERSION: "15 2017"
+        TOOLSET: "None"
+      - VSVERSION: "15 2017"
+        TOOLSET: "v141_clang_c2"
       - VSVERSION: "14 2015"
-      - TOOLSET: "None"
-      - TOOLSET: "v141_clang_c2"
+        TOOLSET: "None"
 
 platform:
   - x64
