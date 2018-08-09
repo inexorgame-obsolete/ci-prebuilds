@@ -4,6 +4,7 @@ notifications:
     on_failure: change
 
 language: generic
+python: 3.6
 
 
 os: linux
