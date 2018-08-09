@@ -18,9 +18,10 @@ before_install:
   - python --version
   - pip --version
   - conan --version
+  - bincrafters-remove-outdated --version
 
 script:
   - conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
   - conan remote list
   - conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
-  - bincrafters-remove-outdated inexor
+  - bincrafters-remove-outdated inexor --ignore --yes
