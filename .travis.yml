@@ -3,8 +3,8 @@ notifications:
     on_success: never
     on_failure: change
 
-language: generic
-
+language: python
+python: 3.6
 
 os: linux
 sudo: required
@@ -12,15 +12,16 @@ dist: trusty
 
 before_install:
   - set -e;
-  - pip install --upgrade pip
+  - sudo pip install --upgrade pip
   - pip install conan
   - pip install bincrafters_remove_outdated
   - python --version
   - pip --version
   - conan --version
+  - bincrafters-remove-outdated --version
 
 script:
   - conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
   - conan remote list
   - conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
-  - bincrafters-remove-outdated inexor
+  - bincrafters-remove-outdated inexor --ignore --yes
