@@ -13,7 +13,7 @@ dist: trusty
 before_install:
   - set -e;
   - sudo pip install --upgrade pip
-  - pip install conan --user
+  - pip install conan
   - pip install bincrafters_remove_outdated
   - python --version
   - pip --version
