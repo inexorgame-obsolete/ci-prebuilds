@@ -13,10 +13,10 @@ before_install:
   - set -e;
   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
   - sudo pip install --upgrade pip
-  - pip install conan --user
-  - pip install bincrafters_remove_outdated
+  - pip3 install conan --user
+  - pip3 install bincrafters_remove_outdated
   - python --version
-  - pip --version
+  - pip3 --version
   - conan --version
 
 script:
