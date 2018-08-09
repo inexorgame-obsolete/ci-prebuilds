@@ -11,7 +11,6 @@ dist: trusty
 
 before_install:
   - set -e;
-  - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
   - sudo pip3 install --upgrade pip3
   - pip3 install conan --user
   - pip3 install bincrafters_remove_outdated
