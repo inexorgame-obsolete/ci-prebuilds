@@ -24,4 +24,4 @@ script:
   - conan remote add inexor https://api.bintray.com/conan/inexorgame/inexor-conan --insert
   - conan remote list
   - conan user -p "${CONAN_PASSWORD}" -r inexor "${CONAN_USER}"
-  - bincrafters-remove-outdated inexor --ignore --yes --pattern "*inexorgame*"
+  - bincrafters-remove-outdated inexor --ignore --yes --pattern "*/*@inexorgame/*"
