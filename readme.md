@@ -1,8 +1,8 @@
 # Inexor's CI Prebuilds
 
-Inexor has many C++ dependencies, which we manage with [Conan packages](https://www.conan.io).
+Inexor has many C/C++ dependencies, which we manage with [Conan packages](https://www.conan.io).
 
-This repository uses our [Docker containers](https://github.com/inexorgame/ci-docker) to compile our C++ dependencies on Travis and AppVeyor.
+This repository uses Conan's Docker containers to compile packages for Linux, Travis macOS environments for macOS packages and AppVeyor's Windows environments for Windows packages.
 
 **Why?**
   * all Inexor team members can trigger a (re-)build easily
